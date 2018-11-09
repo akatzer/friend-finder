@@ -1,6 +1,6 @@
 //loads up the depenencies
 var express = require("express");
-
+var path = require("path");
 //starts up the express server
 var app = express();
 
