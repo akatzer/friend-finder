@@ -25,14 +25,9 @@
                 <form id="form">
 
                     <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="First Name">
+                        <label for="firstName">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="First Name">
 
-                    </div>
-
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="Last Name">
                     </div>
 
                     <div class="form-group">
@@ -41,7 +36,7 @@
                     </div>
 
                 </form>
-                <button type="submit" class="btn btn-primary" id="showQuiz">Take The Quiz</button>
+                <button type="submit" class="btn btn-primary" id="showQuiz">Take The Survey</button>
 
                 <form id="quiz">
 
@@ -59,8 +54,6 @@
                     </div>
                     <br>
 
-
-
                     <label>I see myself as critical, quarrelsome.</label>
                     <br>
                     <div>
@@ -74,7 +67,6 @@
                         </select>
                     </div>
                     <br>
-
 
                     <label>I see myself as dependable, self-disciplined.</label>
                     <br>
@@ -91,8 +83,6 @@
                     </div>
                     <br>
 
-
-
                     <label>I see myself as anxious, easily upset.</label>
                     <br>
                     <div>
@@ -107,7 +97,6 @@
                     </div>
                     <br>
 
-
                     <label>I see myself as open to new experiences, complex.</label>
                     <br>
                     <div>
@@ -121,7 +110,6 @@
                         </select>
                     </div>
                     <br>
-   
 
                     <label>I see myself as reserved, quiet.</label>
                     <br>
@@ -136,7 +124,6 @@
                         </select>
                     </div>
                     <br>
-    
 
                     <label>I see myself as sympathetic, warm.</label>
                     <br>
@@ -151,7 +138,6 @@
                         </select>
                     </div>
                     <br>
-    
 
                     <label>I see myself as disorganized, careless.</label>
                     <br>
@@ -166,7 +152,6 @@
                         </select>
                     </div>
                     <br>
-         
 
                     <label>I see myself as calm, emotionally stable.</label>
                     <br>
@@ -183,7 +168,6 @@
                     </div>
                     <br>
 
-
                     <label>I see myself as conventional, uncreative.</label>
                     <br>
                     <div>
@@ -197,7 +181,6 @@
                         </select>
                     </div>
                     <br>
-       
 
                 </form>
                 <button type="submit" class="btn btn-primary" id="submitQuiz">Submit</button>
@@ -207,9 +190,32 @@
         </div>
     </div>
 
-    <script type="text/javascript">
-      showForm();
+    <!-- this is the modal  -->
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Your Match...</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // runs the show form function when the page loads
+        showForm();
+
+        // function that shows the survey
         function showQuiz() {
             $("#goBack").show();
             $("#submitQuiz").show();
@@ -217,6 +223,8 @@
             $("#form").hide();
             $("#showQuiz").hide();
         }
+
+        // function that shows the form
         function showForm() {
             $("#goBack").hide();
             $("#submitQuiz").hide();
@@ -225,38 +233,59 @@
             $("#showQuiz").show();
         }
 
-
+        // on click event that checks to make sure a name and url has been entered and then shows the survey
         $("#showQuiz").on("click", function () {
-            showQuiz();
+            if ($("#name").val() == "" || $("#photoUrl").val() == "") {
+                alert("Enter your name and image URL");
+            }
+            else {
+                showQuiz();
+            }            
         });
 
+        // a button that takes you back to the name/url section
         $("#goBack").on("click", function () {
             showForm();
         })
 
+        // submits all the information that has been entered and clears out the form for the next entry
         $("#submitQuiz").on("click", function () {
             event.preventDefault();
+
+            //pulls the data from the survey and puts it into the new friend variable
             var newFriend = {
-                firstName: $("#firstName").val().trim(),
-                lastName: $("#lastName").val().trim(),
+                name: $("#name").val().trim(),
                 photoUrl: $("#photoUrl").val().trim(),
-                scores: [],   
-                
+                scores: [
+                    parseInt($("#question1").val().trim()),
+                    parseInt($("#question2").val().trim()),
+                    parseInt($("#question3").val().trim()),
+                    parseInt($("#question4").val().trim()),
+                    parseInt($("#question5").val().trim()),
+                    parseInt($("#question6").val().trim()),
+                    parseInt($("#question7").val().trim()),
+                    parseInt($("#question8").val().trim()),
+                    parseInt($("#question9").val().trim()),
+                    parseInt($("#question10").val().trim()),
+                ],
             }
-            for (var i = 1; i < 11; i ++) {
-                var fScore = $("#question" + [i]).val();
-                newFriend.scores.push(parseInt(fScore));
-            }
+         
+            //posts the data into the API and toggles our friend match modal this also clearsx out the form and starts the user back on the name/url section.
             $.post("/api/friends", newFriend)
-            .then(function(data) {
-                console.log(data);
-                $(".form-control").val("");
-            showForm();
-            })
-           
+                .then(function (data) {
+                    $(".modal-body").html("<p>" + data.matchName + " is your match</p><br><img src='" + data.matchUrl + "'>");
+                    $(".modal").modal("toggle");
+                    $(".form-control").val("");
+                    showForm();
+                })
         })
     </script>
 
 </body>
+<div class="container">
+    <footer>
+        <p><a href="/api/friends">API Friends List</a><span> | </span><a href="https://github.com/akatzer/friend-finder">GitHub Repo</a></p>
+    </footer>
+</div>
 
 </html>
