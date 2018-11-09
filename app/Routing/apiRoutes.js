@@ -1,5 +1,5 @@
 var friendData = require("../data/friend");
-
+var path = require("path");
 // exports the information to the be used in our htmlroutes.js file
 module.exports = function (app) {
 
