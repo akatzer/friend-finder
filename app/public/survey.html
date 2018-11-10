@@ -273,7 +273,7 @@
             //posts the data into the API and toggles our friend match modal this also clearsx out the form and starts the user back on the name/url section.
             $.post("/api/friends", newFriend)
                 .then(function (data) {
-                    $(".modal-body").html("<p>" + data.matchName + " is your match</p><br><img src='" + data.matchUrl + "'>");
+                    $(".modal-body").html("<p>" + data.matchName + " is your match</p><br><img src='" + data.matchUrl + "' height='300px' width='300px'>");
                     $(".modal").modal("toggle");
                     $(".form-control").val("");
                     showForm();
